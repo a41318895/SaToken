@@ -18,7 +18,7 @@ public class SaTokenConfigurer implements WebMvcConfigurer {
 
             // Make all methods need login check, except login method itself.
             SaRouter
-                    .match("/**").notMatch("/login")
+                    .match("/**").notMatch("/login/**")
                     .check(check -> StpUtil.checkLogin()) ;
 
             SaRouter
