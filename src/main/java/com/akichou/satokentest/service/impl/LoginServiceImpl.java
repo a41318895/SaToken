@@ -7,7 +7,7 @@ import cn.dev33.satoken.util.SaResult;
 import com.akichou.satokentest.entity.User;
 import com.akichou.satokentest.entity.dto.LoginDto;
 import com.akichou.satokentest.global.exception.UserNotFoundException;
-import com.akichou.satokentest.repository.LoginRepository;
+import com.akichou.satokentest.repository.UserRepository;
 import com.akichou.satokentest.service.interfaces.LoginService;
 import com.akichou.satokentest.entity.bo.UserBo ;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class LoginServiceImpl implements LoginService {
 
-    private final LoginRepository loginRepository ;
+    private final UserRepository userRepository;
 
     @Override
     public SaResult loginWithDefaultRememberMe(LoginDto loginDto) {
@@ -92,7 +92,7 @@ public class LoginServiceImpl implements LoginService {
 
         final var username = loginDto.getUsername() ;
 
-        return loginRepository.findByUsername(username)
+        return userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException("Username: [ " + username + " ] Not Found")) ;
     }
 
