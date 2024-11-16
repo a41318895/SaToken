@@ -80,5 +80,22 @@ public final class Constant {
     public static final long SAFE_TIME_SECOND = 120 ;
 
 
+    // Account Disable
+    public static final long DISABLE_TIME_SECOND = 172800 ;     // 2 days
+
+    public static final String ACCOUNT_DISABLED_MESSAGE = "Account Disabled - ID = " ;
+
+    public static final String DISABLE_INFO_RETRIEVAL_MESSAGE = "Disable INFO (ID = {0}) - [ Status: {1}, Time: {2} ]" ;
+
+    public static final String DISABLE_TIME_INFINITE_DESCRIPTION = "Infinite" ;
+
+    public static final String DISABLE_TIME_ZERO = "0 sec" ;
+
+    public static final String UNTIE_DISABLE_MESSAGE = "United the account (ID = {0})" ;
+
+    public static final String ACCOUNT_STATUS_HEALTHY = "HEALTHY" ;
+
+    public static final String ACCOUNT_STATUS_DISABLED = "DISABLED" ;
+
     private Constant() {}
 }
