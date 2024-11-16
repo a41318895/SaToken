@@ -6,13 +6,16 @@ import cn.dev33.satoken.stp.StpUtil;
 import cn.dev33.satoken.util.SaResult;
 import com.akichou.satokentest.entity.User;
 import com.akichou.satokentest.entity.dto.LoginDto;
-import com.akichou.satokentest.global.exception.UserNotFoundException;
+import com.akichou.satokentest.enumeration.HttpCodeEnum;
+import com.akichou.satokentest.global.exception.SystemException;
 import com.akichou.satokentest.repository.UserRepository;
-import com.akichou.satokentest.service.interfaces.LoginService;
+import com.akichou.satokentest.service.LoginService;
 import com.akichou.satokentest.entity.bo.UserBo ;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import static com.akichou.satokentest.constant.Constant.*;
 
 @Service
 @Slf4j
@@ -35,13 +38,13 @@ public class LoginServiceImpl implements LoginService {
         // Session
         setUserBoToSession(user) ;
 
-        return SaResult.ok("Login Successfully") ;
+        return SaResult.ok(LOGIN_SUCCESS_MESSAGE) ;
     }
 
     @Override
     public SaResult loginWithSaLoginModel(LoginDto loginDto) {
 
-        final long timeout = 60 * 60 * 24 * 7 ;
+        final long timeout = TOKEN_TIMEOUT ;
 
         User user = queryLoginUser(loginDto) ;
 
@@ -56,7 +59,7 @@ public class LoginServiceImpl implements LoginService {
         // Session
         setUserBoToSession(user, timeout) ;
 
-        return SaResult.ok("Login Successfully") ;
+        return SaResult.ok(LOGIN_SUCCESS_MESSAGE) ;
     }
 
     @Override
@@ -73,7 +76,7 @@ public class LoginServiceImpl implements LoginService {
         // Session
         setUserBoToSession(user) ;
 
-        return SaResult.ok("Login Successfully") ;
+        return SaResult.ok(LOGIN_SUCCESS_MESSAGE) ;
     }
 
     @Override
@@ -85,7 +88,7 @@ public class LoginServiceImpl implements LoginService {
 
         logUserLogout(loginId) ;
 
-        return SaResult.ok("Logout Successfully") ;
+        return SaResult.ok(LOGOUT_SUCCESS_MESSAGE) ;
     }
 
     private User queryLoginUser(LoginDto loginDto) {
@@ -93,24 +96,24 @@ public class LoginServiceImpl implements LoginService {
         final var username = loginDto.getUsername() ;
 
         return userRepository.findByUsername(username)
-                .orElseThrow(() -> new UserNotFoundException("Username: [ " + username + " ] Not Found")) ;
+                .orElseThrow(() -> new SystemException(HttpCodeEnum.USER_NOT_FOUND)) ;
     }
 
     private void logUserLogin(Long userId) {
 
-        log.info("(ID={}) Login Successfully", userId) ;
+        log.info(LOGIN_SUCCESS_MESSAGE_WITH_ID, userId) ;
     }
 
     private void logUserLogout(Long userId) {
 
-        log.info("(ID={}) Logout Successfully", userId) ;
+        log.info(LOGOUT_SUCCESS_MESSAGE_WITH_ID, userId) ;
     }
 
     private void setUserBoToSession(User user) {
 
         // Session : Set UserBo entity to account session with "user" key
         UserBo userBo = new UserBo(user.getId(), user.getUsername()) ;
-        StpUtil.getSession().set("user", userBo) ;
+        StpUtil.getSession().set(ACCOUNT_SESSION_KEY_USER, userBo) ;
     }
 
     private void setUserBoToSession(User user, long timeout) {
@@ -119,6 +122,6 @@ public class LoginServiceImpl implements LoginService {
 
         // Session : Set UserBo entity to account session with "user" key
         UserBo userBo = new UserBo(user.getId(), user.getUsername()) ;
-        saSession.set("user", userBo) ;
+        saSession.set(ACCOUNT_SESSION_KEY_USER, userBo) ;
     }
 }

@@ -1,4 +1,4 @@
-package com.akichou.satokentest.service.interfaces;
+package com.akichou.satokentest.service;
 
 import cn.dev33.satoken.util.SaResult;
 import com.akichou.satokentest.entity.dto.LoginDto;

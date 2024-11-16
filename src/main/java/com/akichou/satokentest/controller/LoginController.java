@@ -2,7 +2,7 @@ package com.akichou.satokentest.controller;
 
 import cn.dev33.satoken.util.SaResult;
 import com.akichou.satokentest.entity.dto.LoginDto;
-import com.akichou.satokentest.service.interfaces.LoginService;
+import com.akichou.satokentest.service.LoginService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;

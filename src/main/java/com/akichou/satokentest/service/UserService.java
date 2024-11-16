@@ -1,4 +1,4 @@
-package com.akichou.satokentest.service.interfaces;
+package com.akichou.satokentest.service;
 
 import cn.dev33.satoken.util.SaResult;
 import com.akichou.satokentest.entity.dto.TwoFactorAuthDto;
@@ -13,4 +13,8 @@ public interface UserService {
     SaResult deleteUserNote();
 
     SaResult doTwoFactorAuthentication(TwoFactorAuthDto twoFactorAuthDto);
+
+    SaResult isLogin(Long userId);
+
+    SaResult getTokenInfo(Long userId);
 }

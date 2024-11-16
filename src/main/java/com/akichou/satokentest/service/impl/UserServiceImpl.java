@@ -1,17 +1,24 @@
 package com.akichou.satokentest.service.impl;
 
+import cn.dev33.satoken.stp.SaTokenInfo;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.dev33.satoken.util.SaResult;
 import com.akichou.satokentest.entity.User;
 import com.akichou.satokentest.entity.dto.TwoFactorAuthDto;
 import com.akichou.satokentest.entity.dto.UserNoteDto;
 import com.akichou.satokentest.entity.vo.UserNoteVo;
-import com.akichou.satokentest.global.exception.UserNotFoundException;
+import com.akichou.satokentest.enumeration.HttpCodeEnum;
+import com.akichou.satokentest.global.exception.SystemException;
 import com.akichou.satokentest.repository.UserRepository;
-import com.akichou.satokentest.service.interfaces.UserService;
+import com.akichou.satokentest.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
+
+import static com.akichou.satokentest.constant.Constant.*;
 
 @Service
 @RequiredArgsConstructor
@@ -37,28 +44,28 @@ public class UserServiceImpl implements UserService {
 
         userRepository.save(user) ;
 
-        log.info("User ( USERNAME = {} ) note content saved successfully", user.getUsername()) ;
+        log.info(NOTE_SAVE_SUCCESS_MESSAGE_WITH_ID, user.getId()) ;
 
-        return SaResult.ok("User note content saved successfully") ;
+        return SaResult.ok(NOTE_SAVE_SUCCESS_MESSAGE) ;
     }
 
     @Override
     public SaResult deleteUserNote() {
 
-        if (!StpUtil.isSafe("deleteUserNote")) {
+        if (!StpUtil.isSafe(DELETE_SIGN)) {
 
-            return SaResult.error("Delete user note failed, please retry after passing two-factor authentication") ;
+            return SaResult.error(NOTE_DELETE_FAIL_MESSAGE) ;
         }
 
         User user = findUserByIdInternal() ;
 
         user.setNote("") ;
 
-        log.info("User ( USERNAME = {} ) deleted note content successfully", user.getUsername()) ;
+        log.info(NOTE_DELETE_SUCCESS_MESSAGE_WITH_ID, user.getId()) ;
 
         userRepository.save(user) ;
 
-        return SaResult.ok("User note content deleted successfully") ;
+        return SaResult.ok(NOTE_DELETE_SUCCESS_MESSAGE) ;
     }
 
     @Override
@@ -68,12 +75,12 @@ public class UserServiceImpl implements UserService {
 
         if (user.getPassword().equals(twoFactorAuthDto.getPassword())) {
 
-            StpUtil.openSafe("deleteUserNote", 120) ;     // Open two-factor authentication with 2 sec
+            StpUtil.openSafe(DELETE_SIGN, SAFE_TIME_SECOND) ;     // Open two-factor authentication with 2 sec
 
-            return SaResult.ok("Two-factor authentication passed temporarily successfully") ;
+            return SaResult.ok(AUTH_PASS_MESSAGE) ;
         }
 
-        return SaResult.error("Two-factor authentication failed") ;
+        return SaResult.error(AUTH_FAIL_MESSAGE) ;
     }
 
     private User findUserByIdInternal() {
@@ -81,6 +88,59 @@ public class UserServiceImpl implements UserService {
         Long userId = Long.valueOf((String)StpUtil.getLoginId()) ;
 
         return userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("Username: [ ID = " + userId + " ] Not Found")) ;
+                .orElseThrow(() -> new SystemException(HttpCodeEnum.USER_NOT_FOUND)) ;
+    }
+
+    @Override
+    public SaResult isLogin(Long userId) {
+
+        if (!userRepository.existsById(userId)) {
+
+            log.warn(LOGIN_STATUS_CHECK_FAIL_MESSAGE_WITH_ID, userId) ;
+            return SaResult.error(USER_NOT_FOUND_MESSAGE) ;
+        }
+
+        boolean isLogin = StpUtil.isLogin(userId) ;
+        log.info(LOGIN_STATUS_CHECK_MESSAGE_WITH_ID, userId, isLogin ? LOGIN_MESSAGE : NO_LOGIN_MESSAGE) ;
+
+        return SaResult.ok(isLogin ? LOGIN_STATUS : NO_LOGIN_STATUS) ;
+    }
+
+    @Override
+    public SaResult getTokenInfo(Long userId) {
+
+        if(!userRepository.existsById(userId)) {
+
+            log.warn(TOKEN_INFO_RETRIEVAL_FAIL_MESSAGE_WITH_ID, userId) ;
+            return SaResult.error(USER_NOT_FOUND_MESSAGE) ;
+        }
+
+        SaTokenInfo saTokenInfo = switchToAndGet(userId, StpUtil::getTokenInfo) ;
+        log.info(TOKEN_INFO_RETRIEVAL_SUCCESS_MESSAGE_WITH_ID, userId) ;
+
+        return SaResult.data(saTokenInfo) ;
+    }
+
+    /**
+     * Execute identification switch and return the getting result
+     * @param userId user id of switching
+     * @param supplier execute function
+     * @return result
+     */
+    public static <T> T switchToAndGet(Long userId, Supplier<T> supplier) {
+
+        AtomicReference<T> ref = new AtomicReference<>() ;
+
+        try {
+
+            StpUtil.switchTo(userId, () -> ref.set(supplier.get())) ;
+
+        } catch (Exception e) {
+
+            log.error(SESSION_SWITCH_FAIL_MESSAGE_WITH_ID_AND_EXCEPTION_MSG, userId, e.getMessage()) ;
+            throw new RuntimeException(SESSION_SWITCH_FAIL_MESSAGE, e) ;
+        }
+
+        return ref.get() ;
     }
 }
