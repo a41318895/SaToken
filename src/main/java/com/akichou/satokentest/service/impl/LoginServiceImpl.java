@@ -6,6 +6,7 @@ import cn.dev33.satoken.stp.StpUtil;
 import cn.dev33.satoken.util.SaResult;
 import com.akichou.satokentest.entity.User;
 import com.akichou.satokentest.entity.dto.LoginDto;
+import com.akichou.satokentest.entity.dto.UserIdAndDeviceDto;
 import com.akichou.satokentest.enumeration.HttpCodeEnum;
 import com.akichou.satokentest.global.exception.SystemException;
 import com.akichou.satokentest.repository.UserRepository;
@@ -14,6 +15,8 @@ import com.akichou.satokentest.entity.bo.UserBo ;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.text.MessageFormat;
 
 import static com.akichou.satokentest.constant.Constant.*;
 
@@ -80,15 +83,24 @@ public class LoginServiceImpl implements LoginService {
     }
 
     @Override
-    public SaResult logout() {
+    public SaResult loginWithDevicePc(LoginDto loginDto) {
 
-        Long loginId = Long.valueOf((String)StpUtil.getLoginId()) ;
+        User user = queryLoginUser(loginDto) ;
 
-        StpUtil.logout() ;
+        // Login with device PC
+        StpUtil.login(user.getId(),
+                new SaLoginModel()
+                        .setIsLastingCookie(true)
+                        .setTimeout(TOKEN_TIMEOUT)
+                        .setDevice(LOGIN_DEVICE)) ;
 
-        logUserLogout(loginId) ;
+        // Logging
+        logUserLogin(user.getId()) ;
 
-        return SaResult.ok(LOGOUT_SUCCESS_MESSAGE) ;
+       // Session
+       setUserBoToSession(user, TOKEN_TIMEOUT) ;
+
+       return SaResult.ok(LOGIN_SUCCESS_MESSAGE) ;
     }
 
     private User queryLoginUser(LoginDto loginDto) {
@@ -97,16 +109,6 @@ public class LoginServiceImpl implements LoginService {
 
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new SystemException(HttpCodeEnum.USER_NOT_FOUND)) ;
-    }
-
-    private void logUserLogin(Long userId) {
-
-        log.info(LOGIN_SUCCESS_MESSAGE_WITH_ID, userId) ;
-    }
-
-    private void logUserLogout(Long userId) {
-
-        log.info(LOGOUT_SUCCESS_MESSAGE_WITH_ID, userId) ;
     }
 
     private void setUserBoToSession(User user) {
@@ -123,5 +125,46 @@ public class LoginServiceImpl implements LoginService {
         // Session : Set UserBo entity to account session with "user" key
         UserBo userBo = new UserBo(user.getId(), user.getUsername()) ;
         saSession.set(ACCOUNT_SESSION_KEY_USER, userBo) ;
+    }
+
+    @Override
+    public SaResult logout() {
+
+        Long loginId = Long.valueOf((String)StpUtil.getLoginId()) ;
+
+        StpUtil.logout() ;
+
+        logUserLogout(loginId) ;
+
+        return SaResult.ok(LOGOUT_SUCCESS_MESSAGE) ;
+    }
+
+    @Override
+    public SaResult logoutWithIdAndDevice(UserIdAndDeviceDto userIdAndDeviceDto) {
+
+        Long targetId = userIdAndDeviceDto.getUserId() ;
+        String device = userIdAndDeviceDto.getDevice() ;
+
+        StpUtil.logout(targetId, device) ;
+
+        // Logging
+        logUserLogout(targetId) ;
+
+        String result =
+                MessageFormat.format(LOGOUT_SUCCESS_MESSAGE_WITH_ID_AND_DEVICE,
+                        targetId,
+                        device) ;
+
+        return SaResult.ok(result) ;
+    }
+
+    private void logUserLogin(Long userId) {
+
+        log.info(LOGIN_SUCCESS_MESSAGE_WITH_ID, userId) ;
+    }
+
+    private void logUserLogout(Long userId) {
+
+        log.info(LOGOUT_SUCCESS_MESSAGE_WITH_ID, userId) ;
     }
 }

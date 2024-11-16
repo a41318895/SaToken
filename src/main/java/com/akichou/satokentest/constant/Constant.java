@@ -19,6 +19,9 @@ public final class Constant {
 
     public static final String NO_LOGIN_STATUS = "[STATUS : NO LOGIN]" ;
 
+    public static final String LOGIN_DEVICE = "PC" ;
+
+    public static final String LOGIN_DEVICE_MESSAGE = "Current User Login Device: " ;
 
     // User Status Message
     public static final String LOGIN_MESSAGE = "logged in" ;
@@ -30,6 +33,8 @@ public final class Constant {
     public static final String LOGOUT_SUCCESS_MESSAGE = "Logout Successfully" ;
 
     public static final String LOGOUT_SUCCESS_MESSAGE_WITH_ID = "(ID={}) Logout Successfully" ;
+
+    public static final String LOGOUT_SUCCESS_MESSAGE_WITH_ID_AND_DEVICE = "Logout Successfully (ID = {0}, DEVICE = {1})" ;
 
     public static final String NO_LOGIN_MESSAGE = "not logged in" ;
 
@@ -54,6 +59,8 @@ public final class Constant {
     public static final String TOKEN_INFO_RETRIEVAL_SUCCESS_MESSAGE_WITH_ID = "Token info successfully retrieved for user (ID={})" ;
 
     public static final long TOKEN_TIMEOUT = 60 * 60 * 24 * 7 ;
+
+    public static final String TOKEN_RETRIEVAL_WITH_ID_AND_DEVICE_MESSAGE = "Token Retrieved (ID = {0}): {1}" ;
 
     // Session
     public static final String ACCOUNT_SESSION_KEY_USER = "user" ;

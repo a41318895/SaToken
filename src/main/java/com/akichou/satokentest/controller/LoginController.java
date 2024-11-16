@@ -2,6 +2,7 @@ package com.akichou.satokentest.controller;
 
 import cn.dev33.satoken.util.SaResult;
 import com.akichou.satokentest.entity.dto.LoginDto;
+import com.akichou.satokentest.entity.dto.UserIdAndDeviceDto;
 import com.akichou.satokentest.service.LoginService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,9 +34,21 @@ public class LoginController {
         return loginService.loginWithForget(loginDto) ;
     }
 
+    @PostMapping("/login/device/pc")
+    public SaResult loginWithDevicePc(@Validated @RequestBody LoginDto loginDto) {
+
+        return loginService.loginWithDevicePc(loginDto) ;
+    }
+
     @PostMapping("/logout")
     public SaResult logout() {
 
         return loginService.logout() ;
+    }
+
+    @PostMapping("/logout/idAndDevice")
+    public SaResult logoutWithIdAndDevice(@Validated @RequestBody UserIdAndDeviceDto userIdAndDeviceDto) {
+
+        return loginService.logoutWithIdAndDevice(userIdAndDeviceDto) ;
     }
 }

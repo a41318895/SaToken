@@ -3,6 +3,7 @@ package com.akichou.satokentest.controller;
 import cn.dev33.satoken.annotation.SaCheckRole;
 import cn.dev33.satoken.util.SaResult;
 import com.akichou.satokentest.entity.dto.TwoFactorAuthDto;
+import com.akichou.satokentest.entity.dto.UserIdAndDeviceDto;
 import com.akichou.satokentest.entity.dto.UserNoteDto;
 import com.akichou.satokentest.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -55,4 +56,17 @@ public class UserController {
 
         return userService.doTwoFactorAuthentication(twoFactorAuthDto) ;
     }
+
+    @GetMapping("/device")
+    public SaResult getUserLoginDevice() {
+
+        return userService.getUserLoginDevice() ;
+    }
+
+    @GetMapping("/token")
+    public SaResult getTokenByIdAndDevice(@Validated @RequestBody UserIdAndDeviceDto userIdAndDeviceDto) {
+
+        return userService.getTokenByIdAndDevice(userIdAndDeviceDto) ;
+    }
+
 }

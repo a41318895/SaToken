@@ -5,6 +5,7 @@ import cn.dev33.satoken.stp.StpUtil;
 import cn.dev33.satoken.util.SaResult;
 import com.akichou.satokentest.entity.User;
 import com.akichou.satokentest.entity.dto.TwoFactorAuthDto;
+import com.akichou.satokentest.entity.dto.UserIdAndDeviceDto;
 import com.akichou.satokentest.entity.dto.UserNoteDto;
 import com.akichou.satokentest.entity.vo.UserNoteVo;
 import com.akichou.satokentest.enumeration.HttpCodeEnum;
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.text.MessageFormat;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
@@ -142,5 +144,31 @@ public class UserServiceImpl implements UserService {
         }
 
         return ref.get() ;
+    }
+
+    @Override
+    public SaResult getUserLoginDevice() {
+
+        String loginDevice = StpUtil.getLoginDevice() ;
+
+        return SaResult.ok(LOGIN_DEVICE_MESSAGE + loginDevice) ;
+    }
+
+    @Override
+    public SaResult getTokenByIdAndDevice(UserIdAndDeviceDto userIdAndDeviceDto) {
+
+        Long id = userIdAndDeviceDto.getUserId() ;
+        String device = userIdAndDeviceDto.getDevice() ;
+
+        String tokenValue = StpUtil.getTokenValueByLoginId(id, device) ;
+
+        String result =
+                MessageFormat.format(TOKEN_RETRIEVAL_WITH_ID_AND_DEVICE_MESSAGE,
+                        id,
+                        tokenValue) ;
+
+        log.info(result) ;
+
+        return SaResult.ok(result) ;
     }
 }
