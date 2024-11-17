@@ -30,6 +30,8 @@ public class SaTokenConfigurer implements WebMvcConfigurer {
             SaRouter.match("/auth/**", check -> StpUtil.checkPermission("auth.operate")) ;
             SaRouter.match("/info/**", check -> StpUtil.checkPermission("info.operate")) ;
 
+            SaRouter.match("/encryption/**", check -> StpUtil.checkRole("admin")) ;
+
         }).isAnnotation(false))
 
                 .addPathPatterns("/**") ;

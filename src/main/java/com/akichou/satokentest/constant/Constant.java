@@ -97,5 +97,15 @@ public final class Constant {
 
     public static final String ACCOUNT_STATUS_DISABLED = "DISABLED" ;
 
+
+    // Encryption
+    public static final String ENCRYPT_SUCCESS_MESSAGE = "Encrypted text: [ {0} ] - [ With {1} Algorithm ]" ;
+
+    public static final String DECRYPT_SUCCESS_MESSAGE = "Decrypted text: [ {0} ] - [ With {1} Algorithm ]" ;
+
+    public static final String MAP_KEY_SIGN_PUBLIC = "public" ;
+
+    public static final String MAP_KEY_SIGN_PRIVATE = "private" ;
+
     private Constant() {}
 }
