@@ -1,13 +1,18 @@
 package com.akichou.satokentest.config;
 
 import cn.dev33.satoken.interceptor.SaInterceptor;
+import cn.dev33.satoken.listener.SaTokenEventCenter;
+import cn.dev33.satoken.listener.SaTokenListenerForLog;
 import cn.dev33.satoken.router.SaRouter;
 import cn.dev33.satoken.stp.StpUtil;
+import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 
 @Configuration
+@Slf4j
 public class SaTokenConfigurer implements WebMvcConfigurer {
 
     // Register Sa-Token Interceptor in order to enable annotation authentication function
@@ -35,5 +40,13 @@ public class SaTokenConfigurer implements WebMvcConfigurer {
         }).isAnnotation(false))
 
                 .addPathPatterns("/**") ;
+    }
+
+    @PostConstruct
+    public void init() {
+
+        SaTokenEventCenter.removeListener(SaTokenListenerForLog.class) ;
+
+        log.info("Removed the default log listener from event center...") ;
     }
 }
