@@ -1,5 +1,8 @@
 package com.akichou.satokentest.util;
 
+import com.akichou.satokentest.enumeration.HttpCodeEnum;
+import com.akichou.satokentest.global.exception.SystemException;
+
 import javax.crypto.Cipher;
 import java.security.*;
 import java.security.interfaces.RSAPrivateKey;
@@ -9,11 +12,13 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 import java.util.HashMap;
 
+import static com.akichou.satokentest.constant.Constant.*;
+
 public class RSAUtils {
 
-    private static final String ALGORITHM_NAME = "RSA" ;
+    private static final String ALGORITHM_NAME = ALGORITHM_NAME_IN_RSA_UTILS ;
 
-    private static final int KEY_SIZE = 2048 ;
+    private static final int KEY_SIZE = KEY_PAIR_GENERATE_SIZE ;
 
     private static final Base64.Encoder encoder = Base64.getEncoder() ;
 
@@ -39,8 +44,8 @@ public class RSAUtils {
 
         // Make byte[] to Base64 String, then store in a Map
         HashMap<String, String> keyMap = new HashMap<>(2) ;
-        keyMap.put("private", encoder.encodeToString(privateKey.getEncoded())) ;
-        keyMap.put("public", encoder.encodeToString(publicKey.getEncoded())) ;
+        keyMap.put(MAP_KEY_SIGN_PRIVATE, encoder.encodeToString(privateKey.getEncoded())) ;
+        keyMap.put(MAP_KEY_SIGN_PUBLIC, encoder.encodeToString(publicKey.getEncoded())) ;
 
         return keyMap ;
     }
@@ -73,6 +78,8 @@ public class RSAUtils {
      * Decrypt With private key
      */
     public static String decrypt(String encryptedText, String privateKeyString) throws Exception {
+
+        if (privateKeyString == null || privateKeyString.trim().isEmpty()) throw new SystemException(HttpCodeEnum.RSA_KEY_SHOULD_EXIST) ;
 
         // Decode from Base64 private key string to byte[]
         byte[] privateKeyBytes = decoder.decode(privateKeyString) ;

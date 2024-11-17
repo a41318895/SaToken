@@ -11,7 +11,6 @@ public class DecryptInfoDto {
     @NotBlank
     private String decryptedText ;
 
-    @NotBlank
     private String key ;
 
     @NotNull

@@ -107,5 +107,11 @@ public final class Constant {
 
     public static final String MAP_KEY_SIGN_PRIVATE = "private" ;
 
+    public static final int HASH_SALT_LOG_ROUNDS = 12 ;
+
+    public static final String ALGORITHM_NAME_IN_RSA_UTILS = "RSA" ;
+
+    public static final int KEY_PAIR_GENERATE_SIZE = 2048 ;
+
     private Constant() {}
 }

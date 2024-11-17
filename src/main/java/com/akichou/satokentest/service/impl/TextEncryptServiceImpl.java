@@ -1,9 +1,12 @@
 package com.akichou.satokentest.service.impl;
 
+import cn.dev33.satoken.secure.BCrypt;
+import cn.dev33.satoken.secure.SaBase64Util;
 import cn.dev33.satoken.secure.SaSecureUtil;
 import cn.dev33.satoken.util.SaResult;
 import com.akichou.satokentest.entity.dto.DecryptInfoDto;
 import com.akichou.satokentest.entity.dto.EncryptInfoDto;
+import com.akichou.satokentest.entity.vo.RSAPrivateKeyVo;
 import com.akichou.satokentest.enumeration.DecryptStrategyEnum;
 import com.akichou.satokentest.enumeration.EncryptStrategyEnum;
 import com.akichou.satokentest.enumeration.HttpCodeEnum;
@@ -57,6 +60,17 @@ public class TextEncryptServiceImpl implements TextEncryptService {
                 yield execute(() -> RSAUtils.encrypt(plainText, keyMap.get(MAP_KEY_SIGN_PUBLIC))) ;
             }
 
+            case BASE64 -> SaBase64Util.encode(plainText) ;
+
+            case BCRYPT -> {
+
+                String strongSaltWithLogRounds12 = BCrypt.gensalt(HASH_SALT_LOG_ROUNDS) ;
+
+                String hashedText = BCrypt.hashpw(plainText, strongSaltWithLogRounds12) ;
+
+                yield hashedText ;
+            }
+
             default -> throw new SystemException(HttpCodeEnum.NO_SUCH_ALGORITHM) ;
         } ;
 
@@ -69,7 +83,7 @@ public class TextEncryptServiceImpl implements TextEncryptService {
 
             SaResult saResult = new SaResult() ;
             saResult.setMsg(result) ;
-            saResult.setData(rsaPrivateKey) ;
+            saResult.setData(new RSAPrivateKeyVo(rsaPrivateKey)) ;
 
             return saResult ;
         }
@@ -88,6 +102,8 @@ public class TextEncryptServiceImpl implements TextEncryptService {
             case AES -> SaSecureUtil.aesDecrypt(aesKey, encryptedText) ;
 
             case RSA -> execute(() -> RSAUtils.decrypt(encryptedText, key)) ;
+
+            case BASE64 -> SaBase64Util.decode(encryptedText) ;
 
             default -> throw new SystemException(HttpCodeEnum.NO_SUCH_ALGORITHM) ;
         } ;
