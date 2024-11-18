@@ -106,9 +106,12 @@ public class LoginServiceImpl implements LoginService {
     private User queryLoginUser(LoginDto loginDto) {
 
         final var username = loginDto.getUsername() ;
+        final var password = loginDto.getPassword() ;
 
-        return userRepository.findByUsername(username)
+        User foundUser = userRepository.findByUsernameAndPassword(username, password)
                 .orElseThrow(() -> new SystemException(HttpCodeEnum.USER_NOT_FOUND)) ;
+
+        return foundUser ;
     }
 
     private void setUserBoToSession(User user) {
