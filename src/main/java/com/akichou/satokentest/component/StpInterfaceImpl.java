@@ -11,7 +11,7 @@ import java.util.List;
 public class StpInterfaceImpl implements StpInterface {
 
     @Override
-    public List<String> getPermissionList(Object o, String s) {
+    public List<String> getPermissionList(Object loginId, String loginType) {
 
         List<String> permissionList = new ArrayList<>() ;
 
@@ -25,13 +25,14 @@ public class StpInterfaceImpl implements StpInterface {
     }
 
     @Override
-    public List<String> getRoleList(Object o, String s) {
+    public List<String> getRoleList(Object loginId, String loginType) {
 
         List<String> roleList = new ArrayList<>() ;
 
         roleList.add("normal-user") ;
         roleList.add("writer") ;
         roleList.add("admin") ;
+        roleList.add("user") ;
 
         return roleList ;
     }

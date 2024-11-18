@@ -1,11 +1,16 @@
 package com.akichou.satokentest.service;
 
 import cn.dev33.satoken.util.SaResult;
+import com.akichou.satokentest.entity.dto.LoginDto;
 import com.akichou.satokentest.entity.dto.TwoFactorAuthDto;
 import com.akichou.satokentest.entity.dto.UserIdAndDeviceDto;
 import com.akichou.satokentest.entity.dto.UserNoteDto;
 
 public interface UserService {
+
+    SaResult loginUser(LoginDto loginDto);
+
+    SaResult logout();
 
     SaResult getNoteContent();
 

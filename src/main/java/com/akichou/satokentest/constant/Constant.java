@@ -113,5 +113,30 @@ public final class Constant {
 
     public static final int KEY_PAIR_GENERATE_SIZE = 2048 ;
 
+
+    // Admin
+    public static final String ADMIN_LOGIN_SUCCESS_MSG_WITH_ID = "(ADMIN ID={}) Login Successfully" ;
+
+    public static final String ACCOUNT_SESSION_KEY_ADMIN = "admin" ;
+
+    public static final String ADMIN_LOGIN_SUCCESS_MSG = "Admin Login Successfully" ;
+
+    public static final String ADMIN_LOGIN_STATUS_CHECK_FAIL_MSG_WITH_ID = "Admin Login status check failed: Admin not found (ID={})" ;
+
+    public static final String ADMIN_LOGIN_STATUS_CHECK_MSG_WITH_ID = "Admin Login status checked for admin (ID={}): {}" ;
+
+    public static final String ADMIN_LOGIN_MESSAGE = "logged in" ;
+
+    public static final String ADMIN_NO_LOGIN_MESSAGE = "not logged in" ;
+
+    public static final String ADMIN_TOKEN_INFO_RETRIEVAL_FAIL_MSG_WITH_ID = "Admin Token info retrieval failed: Admin not found (ID={})" ;
+
+    public static final String ADMIN_TOKEN_INFO_RETRIEVAL_SUCCESS_MSG_WITH_ID = "Admin Token info successfully retrieved for admin (ID={})" ;
+
+    public static final String ADMIN_LOGOUT_SUCCESS_MSG = "Admin Logout Successfully" ;
+
+    public static final String ADMIN_LOGOUT_SUCCESS_MSG_WITH_ID = "(ID={}) Admin Logout Successfully" ;
+
+
     private Constant() {}
 }

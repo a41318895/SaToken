@@ -1,8 +1,10 @@
 package com.akichou.satokentest.controller;
 
 import cn.dev33.satoken.util.SaResult;
+import com.akichou.satokentest.entity.dto.LoginDto;
 import com.akichou.satokentest.service.AdminService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -34,5 +36,29 @@ public class AdminController {
     public SaResult untieAccountFromDisable(@RequestParam("userId") Long userId) {
 
         return adminService.untieAccountFromDisable(userId) ;
+    }
+
+    @PostMapping("/login")
+    public SaResult loginAdmin(@Validated @RequestBody LoginDto loginDto) {
+
+        return adminService.loginAdmin(loginDto) ;
+    }
+
+    @GetMapping("/loginStatus")
+    public SaResult isLogin(@RequestParam(value = "adminId") Long adminId) {
+
+        return adminService.isLogin(adminId) ;
+    }
+
+    @GetMapping("/tokenInfo")
+    public SaResult getTokenInfo(@RequestParam(value = "adminId") Long adminId) {
+
+        return adminService.getTokenInfo(adminId) ;
+    }
+
+    @PostMapping("/logout")
+    public SaResult logout() {
+
+        return adminService.logout() ;
     }
 }
