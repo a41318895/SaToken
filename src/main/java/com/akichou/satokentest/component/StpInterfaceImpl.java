@@ -15,11 +15,9 @@ public class StpInterfaceImpl implements StpInterface {
 
         List<String> permissionList = new ArrayList<>() ;
 
-        permissionList.add("user.add") ;
-        permissionList.add("user.get") ;
-        permissionList.add("user.operate") ;
-        permissionList.add("article.*") ;
-        permissionList.add("info.operate") ;
+        permissionList.add("user.create") ;
+        permissionList.add("user.update") ;
+        permissionList.add("user.delete") ;
 
         return permissionList ;
     }
@@ -29,8 +27,6 @@ public class StpInterfaceImpl implements StpInterface {
 
         List<String> roleList = new ArrayList<>() ;
 
-        roleList.add("normal-user") ;
-        roleList.add("writer") ;
         roleList.add("admin") ;
         roleList.add("user") ;
 

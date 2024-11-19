@@ -1,7 +1,10 @@
 package com.akichou.satokentest.controller;
 
 import cn.dev33.satoken.util.SaResult;
+import com.akichou.satokentest.annotation.SaAdminCheckPermission;
 import com.akichou.satokentest.entity.dto.LoginDto;
+import com.akichou.satokentest.entity.dto.UserDto;
+import com.akichou.satokentest.entity.dto.UserUpdateDto;
 import com.akichou.satokentest.service.AdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
@@ -13,6 +16,30 @@ import org.springframework.web.bind.annotation.*;
 public class AdminController {
 
     private final AdminService adminService ;
+
+    @PostMapping("/login")
+    public SaResult loginAdmin(@Validated @RequestBody LoginDto loginDto) {
+
+        return adminService.loginAdmin(loginDto) ;
+    }
+
+    @GetMapping("/loginStatus")
+    public SaResult isLogin(@RequestParam(value = "adminId") Long adminId) {
+
+        return adminService.isLogin(adminId) ;
+    }
+
+    @GetMapping("/tokenInfo")
+    public SaResult getTokenInfo(@RequestParam(value = "adminId") Long adminId) {
+
+        return adminService.getTokenInfo(adminId) ;
+    }
+
+    @PostMapping("/logout")
+    public SaResult logout() {
+
+        return adminService.logout() ;
+    }
 
     @GetMapping("/disableAccount/Info")
     public SaResult getDisableInfo(@RequestParam("userId") Long userId) {
@@ -38,27 +65,24 @@ public class AdminController {
         return adminService.untieAccountFromDisable(userId) ;
     }
 
-    @PostMapping("/login")
-    public SaResult loginAdmin(@Validated @RequestBody LoginDto loginDto) {
+    @SaAdminCheckPermission(value = "user.create")
+    @PostMapping("/user")
+    public SaResult createUser(@Validated @RequestBody UserDto userDto) {
 
-        return adminService.loginAdmin(loginDto) ;
+        return adminService.createUser(userDto) ;
     }
 
-    @GetMapping("/loginStatus")
-    public SaResult isLogin(@RequestParam(value = "adminId") Long adminId) {
+    @SaAdminCheckPermission(value = "user.update")
+    @PutMapping("/user")
+    public SaResult updateUser(@Validated @RequestBody UserUpdateDto userUpdateDto) {
 
-        return adminService.isLogin(adminId) ;
+        return adminService.updateUser(userUpdateDto) ;
     }
 
-    @GetMapping("/tokenInfo")
-    public SaResult getTokenInfo(@RequestParam(value = "adminId") Long adminId) {
+    @SaAdminCheckPermission(value = "user.delete")
+    @DeleteMapping("/user")
+    public SaResult deleteUser(@RequestParam("userId") Long userId) {
 
-        return adminService.getTokenInfo(adminId) ;
-    }
-
-    @PostMapping("/logout")
-    public SaResult logout() {
-
-        return adminService.logout() ;
+        return adminService.deleteUser(userId) ;
     }
 }

@@ -137,6 +137,12 @@ public final class Constant {
 
     public static final String ADMIN_LOGOUT_SUCCESS_MSG_WITH_ID = "(ID={}) Admin Logout Successfully" ;
 
+    public static final String ADMIN_CREATE_USER_MSG = "User (ID = {0}) created by Admin (ID = {1}) successfully" ;
+
+    public static final String ADMIN_UPDATE_USER_MSG = "User (ID = {0}) updated by Admin (ID = {1}) successfully" ;
+
+    public static final String ADMIN_DELETE_USER_MSG = "User (ID = {0}) deleted by Admin (ID = {1}) successfully" ;
+
 
     private Constant() {}
 }

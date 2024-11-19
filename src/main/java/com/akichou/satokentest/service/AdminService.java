@@ -2,6 +2,8 @@ package com.akichou.satokentest.service;
 
 import cn.dev33.satoken.util.SaResult;
 import com.akichou.satokentest.entity.dto.LoginDto;
+import com.akichou.satokentest.entity.dto.UserDto;
+import com.akichou.satokentest.entity.dto.UserUpdateDto;
 
 public interface AdminService {
 
@@ -20,4 +22,10 @@ public interface AdminService {
     SaResult getTokenInfo(Long adminId);
 
     SaResult logout();
+
+    SaResult createUser(UserDto userDto);
+
+    SaResult updateUser(UserUpdateDto userUpdateDto);
+
+    SaResult deleteUser(Long userId);
 }

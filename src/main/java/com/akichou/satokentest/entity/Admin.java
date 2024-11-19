@@ -1,10 +1,10 @@
 package com.akichou.satokentest.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
 
 @Entity
-@Data
+@Getter
 @Table(name = "admin")
 public class Admin {
 

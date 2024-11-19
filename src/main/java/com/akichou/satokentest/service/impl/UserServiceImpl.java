@@ -114,34 +114,37 @@ public class UserServiceImpl implements UserService {
     @Override
     public SaResult updateUserNote(UserNoteDto userNoteDto) {
 
-        User user = findUserByIdInternal() ;
-
-        user.setNote(userNoteDto.getNoteContent()) ;
-
-        userRepository.save(user) ;
-
-        log.info(NOTE_SAVE_SUCCESS_MESSAGE_WITH_ID, user.getId()) ;
-
-        return SaResult.ok(NOTE_SAVE_SUCCESS_MESSAGE) ;
+//        User user = findUserByIdInternal() ;
+//
+//        user.setNote(userNoteDto.getNoteContent()) ;
+//
+//        userRepository.save(user) ;
+//
+//        log.info(NOTE_SAVE_SUCCESS_MESSAGE_WITH_ID, user.getId()) ;
+//
+//        return SaResult.ok(NOTE_SAVE_SUCCESS_MESSAGE) ;
+        return null ;
     }
 
     @Override
     public SaResult deleteUserNote() {
 
-        if (!StpUtil.isSafe(DELETE_SIGN)) {
+//        if (!StpUtil.isSafe(DELETE_SIGN)) {
+//
+//            return SaResult.error(NOTE_DELETE_FAIL_MESSAGE) ;
+//        }
+//
+//        User user = findUserByIdInternal() ;
+//
+//        user.setNote("") ;
+//
+//        log.info(NOTE_DELETE_SUCCESS_MESSAGE_WITH_ID, user.getId()) ;
+//
+//        userRepository.save(user) ;
+//
+//        return SaResult.ok(NOTE_DELETE_SUCCESS_MESSAGE) ;
 
-            return SaResult.error(NOTE_DELETE_FAIL_MESSAGE) ;
-        }
-
-        User user = findUserByIdInternal() ;
-
-        user.setNote("") ;
-
-        log.info(NOTE_DELETE_SUCCESS_MESSAGE_WITH_ID, user.getId()) ;
-
-        userRepository.save(user) ;
-
-        return SaResult.ok(NOTE_DELETE_SUCCESS_MESSAGE) ;
+        return null ;
     }
 
     @Override

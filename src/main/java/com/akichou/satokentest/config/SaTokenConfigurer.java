@@ -151,6 +151,8 @@ public class SaTokenConfigurer implements WebMvcConfigurer {
 
                     log.info("----- Entered the global exception handling of SaServletFilter -----") ;
 
+                    log.error("Error Message: {}", e.getMessage()) ;
+
                     return SaResult.error(e.getMessage()) ;
                 }) ;
     }

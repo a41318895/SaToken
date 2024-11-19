@@ -12,24 +12,24 @@ public class StpKit {
     public static final StpLogic DEFAULT = StpUtil.stpLogic ;
 
     // User Session Object
-    public static final StpLogic USER = new StpLogic("user") {
-
-        // Make token name 'saToken:user' to prevent token-cover occurring
-        @Override
-        public String splicingKeyTokenName() {
-
-            return super.splicingKeyTokenName() + ":user" ;
-        }
-    } ;
+    public static final StpLogic USER = new StpLogic("user") ;
+//    {
+//        // Make token name 'saToken:user' to prevent token-cover occurring
+//        @Override
+//        public String splicingKeyTokenName() {
+//
+//            return super.splicingKeyTokenName() + ":user" ;
+//        }
+//    } ;
 
     // Admin Session Object
-    public static final StpLogic ADMIN = new StpLogic("admin") {
-
-        // Make token name 'saToken:user' to prevent token-cover occurring
-        @Override
-        public String splicingKeyTokenName() {
-
-            return super.splicingKeyTokenName() + ":admin" ;
-        }
-    } ;
+    public static final StpLogic ADMIN = new StpLogic("admin") ;
+//    {
+//        // Make token name 'saToken:user' to prevent token-cover occurring
+//        @Override
+//        public String splicingKeyTokenName() {
+//
+//            return super.splicingKeyTokenName() + ":admin" ;
+//        }
+//    } ;
 }

@@ -5,10 +5,18 @@ import cn.dev33.satoken.stp.SaTokenInfo;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.dev33.satoken.util.SaResult;
 import com.akichou.satokentest.entity.Admin;
+import com.akichou.satokentest.entity.User;
 import com.akichou.satokentest.entity.bo.AdminBo;
 import com.akichou.satokentest.entity.dto.LoginDto;
+import com.akichou.satokentest.entity.dto.UserDto;
+import com.akichou.satokentest.entity.dto.UserUpdateDto;
+import com.akichou.satokentest.entity.vo.UserUpdatedVo;
+import com.akichou.satokentest.enumeration.CRUDLogType;
+import com.akichou.satokentest.enumeration.HttpCodeEnum;
 import com.akichou.satokentest.global.exception.SystemException;
+import com.akichou.satokentest.mapper.UserMapper;
 import com.akichou.satokentest.repository.AdminRepository;
+import com.akichou.satokentest.repository.UserRepository;
 import com.akichou.satokentest.service.AdminService;
 import com.akichou.satokentest.util.StpKit;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +27,7 @@ import java.text.MessageFormat;
 
 import static com.akichou.satokentest.constant.Constant.*;
 import static com.akichou.satokentest.enumeration.HttpCodeEnum.ADMIN_NOT_FOUND;
+import static com.akichou.satokentest.enumeration.HttpCodeEnum.USER_NOT_FOUND;
 
 @Service
 @Slf4j
@@ -26,6 +35,7 @@ import static com.akichou.satokentest.enumeration.HttpCodeEnum.ADMIN_NOT_FOUND;
 public class AdminServiceImpl implements AdminService {
 
     private final AdminRepository adminRepository ;
+    private final UserRepository userRepository ;
 
     @Override
     public SaResult disableAccount(Long userId) {
@@ -162,7 +172,7 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public SaResult logout() {
 
-        Object loginId = StpKit.ADMIN.getLoginId();
+        Object loginId = Long.valueOf(StpKit.ADMIN.getLoginId().toString());
 
         StpKit.ADMIN.logout() ;
 
@@ -170,6 +180,76 @@ public class AdminServiceImpl implements AdminService {
         logAdminLogout(loginId) ;
 
         return SaResult.ok(ADMIN_LOGOUT_SUCCESS_MSG) ;
+    }
+
+    @Override
+    public SaResult createUser(UserDto userDto) {
+
+        Long adminId = fetchAdminLoginIdInternal() ;
+
+        // Create new user
+        User createdUser = UserMapper.mapUserDtoToUser(userDto, adminId) ;
+        User savedUser = userRepository.save(createdUser) ;
+        Long userId = savedUser.getId() ;
+
+        // Logging
+        logCRUDOperation(adminId, userId, CRUDLogType.CREATE) ;
+
+        // Returning Handling
+        String result = MessageFormat.format(ADMIN_CREATE_USER_MSG, userId, adminId) ;
+        SaResult saResult = new SaResult() ;
+        saResult.setCode(201) ;
+        saResult.setMsg(result) ;
+
+        return saResult ;
+    }
+
+    @Override
+    public SaResult updateUser(UserUpdateDto userUpdateDto) {
+
+        Long adminId = fetchAdminLoginIdInternal() ;
+
+        // Fetch origin user from DB
+        User user = userRepository.findById(userUpdateDto.getId()).orElseThrow(() -> new SystemException(USER_NOT_FOUND)) ;
+
+        // Update user
+        User updatedUser = UserMapper.mapUserUpdateDtoToUser(user, userUpdateDto, adminId) ;
+        User savedUser = userRepository.save(updatedUser) ;
+        Long userId = savedUser.getId() ;
+
+        // Logging
+        logCRUDOperation(adminId, userId, CRUDLogType.UPDATE) ;
+
+        // Returning Handling
+        String result = MessageFormat.format(ADMIN_UPDATE_USER_MSG, userId, adminId) ;
+        UserUpdatedVo userUpdatedVo = UserMapper.mapUserToUserUpdatedVo(savedUser) ;
+        SaResult saResult = new SaResult() ;
+        saResult.setCode(200) ;
+        saResult.setMsg(result) ;
+        saResult.setData(userUpdatedVo) ;
+
+        return saResult ;
+    }
+
+    @Override
+    public SaResult deleteUser(Long userId) {
+
+        Long adminId = fetchAdminLoginIdInternal() ;
+
+        // Delete user
+        User deletedUser = userRepository.findById(userId).orElseThrow(() -> new SystemException(HttpCodeEnum.USER_NOT_FOUND)) ;
+        userRepository.delete(deletedUser) ;
+
+        // Logging
+        logCRUDOperation(adminId, userId, CRUDLogType.DELETE) ;
+
+        // Returning Handling
+        String result = MessageFormat.format(ADMIN_DELETE_USER_MSG, userId, adminId) ;
+        SaResult saResult = new SaResult() ;
+        saResult.setCode(204) ;
+        saResult.setMsg(result) ;
+
+        return saResult ;
     }
 
     private Admin queryLoginAdmin(LoginDto loginDto) {
@@ -181,7 +261,7 @@ public class AdminServiceImpl implements AdminService {
                 .orElseThrow(() -> new SystemException(ADMIN_NOT_FOUND)) ;
     }
 
-    private void logAdminLogin(Long adminId) {
+    private void logAdminLogin(Object adminId) {
 
         log.info(ADMIN_LOGIN_SUCCESS_MSG_WITH_ID, adminId) ;
     }
@@ -207,5 +287,24 @@ public class AdminServiceImpl implements AdminService {
     private void logAdminLogout(Object adminId) {
 
         log.info(ADMIN_LOGOUT_SUCCESS_MSG_WITH_ID, adminId) ;
+    }
+
+    private void logCRUDOperation(Object adminId, Object userId, CRUDLogType type) {
+
+        String typeString = "" ;
+        switch (type) {
+
+            case READ -> typeString = "read" ;
+            case CREATE -> typeString = "create" ;
+            case UPDATE -> typeString = "update" ;
+            case DELETE -> typeString = "delete" ;
+        }
+
+        log.info("Admin (ID = {}) {} the user (ID = {})", adminId, typeString, userId) ;
+    }
+
+    private Long fetchAdminLoginIdInternal() {
+
+        return StpKit.ADMIN.getLoginIdAsLong() ;
     }
 }
