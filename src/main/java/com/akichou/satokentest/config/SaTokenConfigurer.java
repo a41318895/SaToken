@@ -8,6 +8,7 @@ import cn.dev33.satoken.listener.SaTokenEventCenter;
 import cn.dev33.satoken.listener.SaTokenListenerForLog;
 import cn.dev33.satoken.router.SaRouter;
 import cn.dev33.satoken.stp.StpUtil;
+import cn.dev33.satoken.strategy.SaAnnotationStrategy;
 import cn.dev33.satoken.util.SaResult;
 import com.akichou.satokentest.util.StpKit;
 import jakarta.annotation.PostConstruct;
@@ -16,6 +17,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.core.annotation.AnnotatedElementUtils;
 
 @Configuration
 @Slf4j
@@ -24,21 +26,30 @@ public class SaTokenConfigurer implements WebMvcConfigurer {
     @PostConstruct
     public void init() {
 
+        // Remove the default event listener
         SaTokenEventCenter.removeListener(SaTokenListenerForLog.class) ;
 
+        // Set a custom config
         SaManager.getConfig()
-                        .setTokenName("saToken")
-                        .setTokenStyle("uuid")
-                        .setIsShare(true)
-                        .setIsConcurrent(true)
-                        .setIsReadCookie(true)
-                        .setIsReadHeader(true)
-                        .setAutoRenew(true)
-                        .setActiveTimeout(-1)
-                        .setIsLog(true)
-                        .setTokenSessionCheckLogin(true) ;
+                        .setTokenName("saToken")    // Token name ( Cookie name as well )
+                        .setTokenStyle("uuid")      // ( uuid, simple-uuid, random-32, random-64, random-128, tik )
+                        .setIsShare(true)       // Is the same token when login with same username
+                        .setIsConcurrent(true)      // Can same username login with multiple devices
+                        .setIsReadCookie(true)      // Does read token from cookie
+                        .setIsReadHeader(true)      // Does read token from header
+                        .setAutoRenew(true)         // Automatically renew token timeout
+                        .setSameTokenTimeout(2592000)    // Token expiration (s),
+                                                         // default 30 days, -1: permanent, -2: unable to use
+                        .setActiveTimeout(-1)   // token min active timeout (s)
+                                                // If token hasn't visit over this timeout,
+                                                // it will be frozen, default: -1 which it represented that never be frozen
+                        .setIsLog(true)     // Active log displaying
+                        .setTokenSessionCheckLogin(true) ;      // Check isLogin when get token session
 
-        log.info("Removed the default log listener from event center...") ;
+
+        // Rewrite sa annotation strategy, adding annotation merging function
+        SaAnnotationStrategy.instance.getAnnotation =
+                AnnotatedElementUtils::getMergedAnnotation ;
     }
 
     // Register Sa-Token Interceptor in order to enable annotation authentication function
